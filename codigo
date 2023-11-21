@@ -1,1 +1,50 @@
+import machine
+import time
+from mq2 import MQ2
+import utime
+
+# # seleccionamos el Pin analogico para la salida analogica del sensor
+pin = 27
+
+sensor = MQ2(pinData = pin, baseVoltage = 3.3)
+
+sensor.calibrate()
+
+ 
+# # seleccionamos los pins para cada componente
+ledr = machine.Pin(5,machine.Pin.OUT)
+ledv = machine.Pin(12,machine.Pin.OUT)
+buzzer = machine.Pin(19,machine.Pin.OUT, value = True)
+# # este es el pin para la salida digital
+sens = machine.Pin(2,machine.Pin.IN, value = False)
+
+while True:
+# # asignamos variables a las lecturas de cada elemento
+    smoke = sensor.readSmoke()
+    methane = sensor.readMethane()
+    lpg = sensor.readLPG()
+    
+    
+    
+# # si uno de estos valores supera la cantidad asignada se prendera el led rojo y el buzzer    
+    
+    if(smoke >= 21) or (methane >= 20) or (lpg >= 15) or (sens.value() == 1):
+        ledr.value(1)
+        ledv.value(0)
+        buzzer.value(0)
+        
+    else:
+        ledr.value(0)
+        ledv.value(1)
+        buzzer.value(1)
+    
+    print("Methane: {:.1f}".format(methane)+" - ", end = "")
+    print("Smoke: {:.1f}".format(smoke)+" - ", end = "")
+    print("LPG: {:.1f}".format(lpg)+" - ", end = "")
+    print("la salida digital es: {:.1f}".format(sens.value()))
+    print("led rojo: {:.1f} ".format(ledr.value()))
+    print("led verde: {:.1f} ".format(ledv.value()))
+    print("buzzer: {:.1f} ".format(buzzer.value()))
+
+
 
